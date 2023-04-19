@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.math.Rectangle;
-import jdk.tools.jmod.Main;
+//import jdk.tools.jmod.Main;
 
 public class MyGdxGame extends ApplicationAdapter {
 	private OrthographicCamera camera;
@@ -17,6 +17,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture background;
 	Texture MC;
+	//хууууунта
 
 
 	@Override

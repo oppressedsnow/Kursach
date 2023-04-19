@@ -17,7 +17,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture background;
 	Texture MC;
-	//тут був я (Євгеша)
+	//тут був я (Євгеша))
 
 
 	@Override

@@ -22,7 +22,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture background;
 	Texture MC;
 	//тут був я (Євгеша))
-
+	private float VelocityY; // текущая вертикальная скорость объекта
+	private boolean isJumping = false; // флаг, указывающий, прыгает ли объект
+	private static final float Jump_height = 100f; // максимальная высота прыжка
+	private static final float Gravity = -200f; // ускорение свободного падения в м/с^2
 
 
 	@Override
@@ -34,8 +37,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		MCImage = new Texture(Gdx.files.internal("pp.jpg"));
 		background = new Texture(Gdx.files.internal("bg0.png")); // картинка 1920х1080 (все працює чотко)
 		MainCharacter = new Rectangle();
-		MainCharacter.x = 800 / 4 - 64 / 4;
-		MainCharacter.y = 35;
+		MainCharacter.x = 1920 / 4 - 400 / 4;
+		MainCharacter.y = 0;
 		MainCharacter.width = 64;
 		MainCharacter.height = 64;
 	}
@@ -53,15 +56,28 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.begin();
 		batch.draw(MCImage, MainCharacter.x, MainCharacter.y);
 		batch.end();
-		if(MainCharacter.x < 0) MainCharacter.x = 0;
-		if(MainCharacter.x > 1920 - 64) MainCharacter.x = 1920 - 64;
-		if(MainCharacter.y < 0) MainCharacter.y = 0;
-		if(MainCharacter.y > 1080 - 64) MainCharacter.y = 1080 - 64;
+		if(MainCharacter.x <= 0) MainCharacter.x = 0;
+		if(MainCharacter.x >= 1920 - 64) MainCharacter.x = 1920 - 64;
+		if(MainCharacter.y >= 1080 - 64) MainCharacter.y = 1080 - 64;
 		if(Gdx.input.isKeyPressed(Input.Keys.A)) MainCharacter.x -= 400 * Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.D)) MainCharacter.x += 400 * Gdx.graphics.getDeltaTime();
-		if(Gdx.input.isKeyPressed(Input.Keys.S)) MainCharacter.y -= 400 * Gdx.graphics.getDeltaTime();
-		if(Gdx.input.isKeyPressed(Input.Keys.W)) MainCharacter.y += 400 * Gdx.graphics.getDeltaTime();
 
+		if (isJumping) { // объект движется только если он прыгает
+			VelocityY += Gravity * Gdx.graphics.getDeltaTime();
+			MainCharacter.y += VelocityY * Gdx.graphics.getDeltaTime();
+		}
+		if (MainCharacter.y <= 0) { // объект остановится, когда достигнет поверхности
+			MainCharacter.y = 0;
+			VelocityY = 0;
+			isJumping = false;
+		}
+		else if (MainCharacter.y >= Jump_height) { // переключаем персонажа в режим падения
+			VelocityY = -Gravity * Gdx.graphics.getDeltaTime(); // устанавливаем начальную скорость падения
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && !isJumping) {
+			VelocityY = 200; // задаем начальную вертикальную скорость объекта при прыжке
+			isJumping = true;
+		}
 
 	}
 

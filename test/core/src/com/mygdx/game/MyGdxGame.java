@@ -25,7 +25,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private float VelocityY; // текущая вертикальная скорость объекта
 	private boolean isJumping = false; // флаг, указывающий, прыгает ли объект
 	private static final float Jump_height = 100f; // максимальная высота прыжка
-	private static final float Gravity = -200f; // ускорение свободного падения в м/с^2
+	private static final float Gravity = -200f; // ускорение свободного падения в м/с^2 (влияет на висоту прыжка я хз)
 
 
 	@Override
@@ -37,7 +37,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		MCImage = new Texture(Gdx.files.internal("pp.jpg"));
 		background = new Texture(Gdx.files.internal("bg0.png")); // картинка 1920х1080 (все працює чотко)
 		MainCharacter = new Rectangle();
-		MainCharacter.x = 1920 / 4 - 400 / 4;
+		MainCharacter.x = 1920 / 4 - 1080 / 4;
 		MainCharacter.y = 0;
 		MainCharacter.width = 64;
 		MainCharacter.height = 64;
@@ -74,7 +74,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		else if (MainCharacter.y >= Jump_height) { // переключаем персонажа в режим падения
 			VelocityY = -Gravity * Gdx.graphics.getDeltaTime(); // устанавливаем начальную скорость падения
 		}
-		if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && !isJumping) {
+		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && !isJumping) {
 			VelocityY = 200; // задаем начальную вертикальную скорость объекта при прыжке
 			isJumping = true;
 		}

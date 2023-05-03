@@ -71,7 +71,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			VelocityY = 0;
 			isJumping = false;
 		}
-		else if (MainCharacter.y >= Jump_height) { // переключаем персонажа в режим падения
+		else if (MainCharacter.y >= Jump_height + MainCharacter.y) { // переключаем персонажа в режим падения
 			VelocityY = -Gravity * Gdx.graphics.getDeltaTime(); // устанавливаем начальную скорость падения
 		}
 		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && !isJumping) {

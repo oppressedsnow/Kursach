@@ -3,6 +3,8 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -12,8 +14,6 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import java.util.Iterator;
-
-
 
 
 public class MyGdxGame extends ApplicationAdapter {
@@ -30,6 +30,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Texture MCImage;
 	private Texture Ground;
 	private Texture Coin;
+	private Sound CoinPick;
+	private Music forest;
 
 
 	SpriteBatch batch;
@@ -57,7 +59,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		prevx = 0;
 		prevy = 0;
 		Coin = new Texture(Gdx.files.internal("coin.png"));
-
+		CoinPick = Gdx.audio.newSound(Gdx.files.internal("CoinPick.mp3"));
+		forest = Gdx.audio.newMusic(Gdx.files.internal("forest.mp3"));
+		forest.setLooping(true);
+		forest.play();
 	}
 
 	private void spawnRaindrop() {
@@ -145,6 +150,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			coin.y -= 200 * Gdx.graphics.getDeltaTime();
 			if(coin.y + 64 < 0) iter.remove();
 			if(coin.overlaps(MainCharacter)) {
+				CoinPick.play();
 				iter.remove();
 			}
 		}
@@ -153,6 +159,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		batch.dispose();
+		Coin.dispose();
 		background.dispose();
+		MCImage.dispose();
+		CoinPick.dispose();
+		forest.dispose();
 	}
 }

@@ -6,42 +6,46 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.TimeUtils;
+import java.util.Iterator;
 
 
 
-//import jdk.tools.jmod.Main;
 
 public class MyGdxGame extends ApplicationAdapter {
 	private OrthographicCamera camera;
 	private Rectangle MainCharacter;
 	private Rectangle GroundRectangle;
+	private Array<Rectangle> raindrops;
+	private long lastDropTime;
 
-	float MCWidth = 64;
-	float MCHeight = 64;
+	float MCWidth = 100;
+	float MCHeight = 128;
 	float prevx;
 	float prevy;
 	private Texture MCImage;
 	private Texture Ground;
+	private Texture Coin;
+
 
 	SpriteBatch batch;
 	Texture background;
-	Texture MC;
-	//тут був я (Євгеша))
 	private float VelocityY; // текущая вертикальная скорость объекта
 	private boolean isJumping = false; // флаг, указывающий, прыгает ли объект
-//	private static final float Jump_height = 100f; // максимальная высота прыжка
 	private static final float Gravity = -600f; // ускорение свободного падения в м/с^2 (влияет на висоту прыжка я хз)
 
 	@Override
 	public void create () {
-
+		raindrops = new Array<Rectangle>();
+		spawnRaindrop();
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1920, 1080);
 		batch = new SpriteBatch();
-		MCImage = new Texture(Gdx.files.internal("64.png")); //картінка нашого перса
+		MCImage = new Texture(Gdx.files.internal("idle.png")); //картінка нашого перса
 		background = new Texture(Gdx.files.internal("bg0.png")); // картинка 1920х1080 (все працює чотко)
 		MainCharacter = new Rectangle(MCWidth, MCHeight, MCImage.getWidth(), MCImage.getHeight());
 		MainCharacter.x = 100; //положення персонажа по х
@@ -52,12 +56,25 @@ public class MyGdxGame extends ApplicationAdapter {
 		GroundRectangle.y = 0; //положення об'єкта по у
 		prevx = 0;
 		prevy = 0;
+		Coin = new Texture(Gdx.files.internal("coin.png"));
+
 	}
 
+	private void spawnRaindrop() {
+		Rectangle coin = new Rectangle();
+		coin.x = MathUtils.random(0, 800-64);
+		coin.y = 480;
+		coin.width = 64;
+		coin.height = 64;
+		raindrops.add(coin);
+		lastDropTime = TimeUtils.nanoTime();
+
+	}
 
 
 	@Override
 	public void render () {
+		if(TimeUtils.nanoTime() - lastDropTime > 1000000000) spawnRaindrop();
 		ScreenUtils.clear(0, 0, 0.2f, 1);
 		batch.begin();
 		batch.draw(background, 0, 0);
@@ -66,6 +83,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		batch.draw(MCImage, MainCharacter.x, MainCharacter.y);
+		for(Rectangle raindrop: raindrops) {
+			batch.draw(Coin, raindrop.x, raindrop.y);
+		}
 		batch.end();
 		batch.begin();
 		batch.draw(Ground, GroundRectangle.x, GroundRectangle.y);
@@ -91,9 +111,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			VelocityY = 0;
 			isJumping = false;
 		}
-//		else if (MainCharacter.y >= Jump_height + MainCharacter.y) { // переключаем персонажа в режим падения
-//			VelocityY = -Gravity * Gdx.graphics.getDeltaTime(); // устанавливаем начальную скорость падения
-//		}
+
 		if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && !isJumping) {
 			VelocityY = 600; // задаем начальную вертикальную скорость объекта при прыжке
 			isJumping = true;
@@ -116,13 +134,20 @@ public class MyGdxGame extends ApplicationAdapter {
 				isJumping = false;
 
 			}
-			else if (MainCharacter.y < GroundRectangle.y){
+			else if (MainCharacter.y < GroundRectangle.y) {
 				MainCharacter.y = GroundRectangle.y - 64;
 				VelocityY = -300;
 				isJumping = true;
 			}
 		}
-
+		for (Iterator<Rectangle> iter = raindrops.iterator(); iter.hasNext(); ) {
+			Rectangle coin = iter.next();
+			coin.y -= 200 * Gdx.graphics.getDeltaTime();
+			if(coin.y + 64 < 0) iter.remove();
+			if(coin.overlaps(MainCharacter)) {
+				iter.remove();
+			}
+		}
 	}
 
 	@Override
